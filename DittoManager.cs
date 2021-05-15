@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Verhaeg.IoT.Processor;
-using Verhaeg.IoT.Ditto;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
