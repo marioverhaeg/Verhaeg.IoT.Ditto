@@ -1,0 +1,1 @@
+[Eclipse Ditto™](https://www.eclipse.org/ditto/) is an open source framework for creating and managing digital twins in the IoT. Verhaeg.IoT.Ditto is a small class library that wraps the Ditto websocket and REST interface and makes this usable in other projects. You can find more information on https://www.marioverhaeg.nl/tag/ditto/
