@@ -15,7 +15,7 @@ namespace Verhaeg.IoT.Ditto
         // SingleTon
         //private static DittoWebSocketManager _instance;
         //private static readonly object padlock = new object();
-        private Configuration.Ditto_WS configuration;
+        private Configuration_WS configuration;
 
         // Fields
         protected Boolean blKeepRunning;
@@ -38,7 +38,7 @@ namespace Verhaeg.IoT.Ditto
             CancellationToken ct = cts.Token;
 
             // Initiate Configuration
-            configuration = Verhaeg.IoT.Configuration.Ditto_WS.Instance("Configuration" + System.IO.Path.AltDirectorySeparatorChar + "Ditto_WS.json");
+            configuration = Configuration_WS.Instance("Configuration" + System.IO.Path.AltDirectorySeparatorChar + "Ditto_WS.json");
 
             Log.Debug("Starting new task to connect to Ditto Websocket...");
             t = Task.Factory.StartNew(() => Start(ns), ct);

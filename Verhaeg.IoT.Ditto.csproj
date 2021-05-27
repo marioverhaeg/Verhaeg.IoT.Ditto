@@ -9,11 +9,11 @@
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="Verhaeg.IoT.Processor" Version="1.0.6" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Verhaeg.IoT.Configuration\Verhaeg.IoT.Configuration.csproj" />
-    <ProjectReference Include="..\Verhaeg.IoT.Processor\Verhaeg.IoT.Processor.csproj" />
   </ItemGroup>
 
 </Project>

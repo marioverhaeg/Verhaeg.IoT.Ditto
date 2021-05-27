@@ -12,7 +12,7 @@ namespace Verhaeg.IoT.Ditto
         // SingleTon
         private static DittoManager _instance = null;
         private static readonly object padlock = new object();
-        private Verhaeg.IoT.Configuration.Ditto_HTTP configuration;
+        private Configuration.Configuration_HTTP configuration;
 
         // Communication
         private HttpClient hc;
@@ -21,7 +21,7 @@ namespace Verhaeg.IoT.Ditto
         private DittoManager(string name) : base(name)
         {
             // Initiate Configuration
-            configuration = Verhaeg.IoT.Configuration.Ditto_HTTP.Instance("Configuration" + System.IO.Path.AltDirectorySeparatorChar + "Ditto_HTTP.json");
+            configuration = Configuration.Configuration_HTTP.Instance("Configuration" + System.IO.Path.AltDirectorySeparatorChar + "Ditto_HTTP.json");
 
             hc = new HttpClient();
             hc.BaseAddress = configuration.URI();
