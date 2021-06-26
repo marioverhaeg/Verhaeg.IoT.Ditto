@@ -12,10 +12,8 @@ namespace Verhaeg.IoT.Ditto
 {
     public abstract class DittoWebSocketManager
     {
-        // SingleTon
-        //private static DittoWebSocketManager _instance;
-        //private static readonly object padlock = new object();
-        private Configuration_WS configuration;
+        // Store configuration
+        private Configuration.Connection conf;
 
         // Fields
         protected Boolean blKeepRunning;
@@ -26,7 +24,7 @@ namespace Verhaeg.IoT.Ditto
         // Logging
         protected Serilog.ILogger Log;
 
-        protected DittoWebSocketManager(string ns, string type)
+        protected DittoWebSocketManager(string ns, string type, string uri, string username, string password)
         {
             // Serilog Configuration
             Log = Processor.Log.CreateLog(type);
@@ -38,8 +36,7 @@ namespace Verhaeg.IoT.Ditto
             CancellationToken ct = cts.Token;
 
             // Initiate Configuration
-            configuration = Configuration_WS.Instance("Configuration" + System.IO.Path.AltDirectorySeparatorChar + "Ditto_WS.json");
-
+            conf = new Configuration.Connection(uri, username, password);
             Log.Debug("Starting new task to connect to Ditto Websocket...");
             t = Task.Factory.StartNew(() => Start(ns), ct);
         }
@@ -59,9 +56,9 @@ namespace Verhaeg.IoT.Ditto
                 using (var socket = new ClientWebSocket())
                     try
                     {
-                        Log.Debug("Trying to connect to Ditto using: " + configuration.Username() + " " + configuration.URI().ToString());
-                        socket.Options.Credentials = new NetworkCredential(configuration.Username(), configuration.Password());
-                        await socket.ConnectAsync(configuration.URI(), CancellationToken.None).ConfigureAwait(false);
+                        Log.Debug("Trying to connect to Ditto using: " + conf.username + " " + conf.ditto_uri.ToString());
+                        socket.Options.Credentials = new NetworkCredential(conf.username, conf.password);
+                        await socket.ConnectAsync(conf.ditto_uri, CancellationToken.None).ConfigureAwait(false);
                         await Send(socket, ns).ConfigureAwait(false);
                         await Receive(socket).ConfigureAwait(false);
                     }

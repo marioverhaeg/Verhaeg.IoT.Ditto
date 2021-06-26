@@ -12,31 +12,31 @@ namespace Verhaeg.IoT.Ditto
         // SingleTon
         private static DittoManager _instance = null;
         private static readonly object padlock = new object();
-        private Configuration.Configuration_HTTP configuration;
+        private Configuration.Connection conf;
 
         // Communication
         private HttpClient hc;
         private DittoClient dc;
 
-        private DittoManager(string name) : base(name)
+        private DittoManager(string name, string uri, string username, string password) : base(name)
         {
             // Initiate Configuration
-            configuration = Configuration.Configuration_HTTP.Instance("Configuration" + System.IO.Path.AltDirectorySeparatorChar + "Ditto_HTTP.json");
+            conf = new Configuration.Connection(uri, username, password);
 
             hc = new HttpClient();
-            hc.BaseAddress = configuration.URI();
-            var byteArray = System.Text.Encoding.ASCII.GetBytes(configuration.Username() + ":" + configuration.Password());
+            hc.BaseAddress = conf.ditto_uri;
+            var byteArray = System.Text.Encoding.ASCII.GetBytes(conf.username + ":" + conf.password);
             hc.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
             dc = new DittoClient(hc);
         }
 
-        public static DittoManager Instance()
+        public static DittoManager Instance(string uri, string username, string password)
         {
             lock (padlock)
             {
                 if (_instance == null)
                 {
-                    _instance = new DittoManager("DittoManager");
+                    _instance = new DittoManager("DittoManager", uri, username, password);
                 }
                 return (DittoManager)_instance;
             }
@@ -99,8 +99,9 @@ namespace Verhaeg.IoT.Ditto
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Couldn't modify thing with thingId " + att.Value.ToString() + ", dropping update.");
+                    Log.Error("Couldn't modify thing with thingId " + att.Value.ToString() + ", retrying update.");
                     Log.Fatal(ex.ToString());
+                    Write(obj);
                 }
             }
             else
