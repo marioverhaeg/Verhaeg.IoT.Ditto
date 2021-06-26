@@ -12,8 +12,4 @@
     <PackageReference Include="Verhaeg.IoT.Processor" Version="1.0.6" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Verhaeg.IoT.Configuration\Verhaeg.IoT.Configuration.csproj" />
-  </ItemGroup>
-
 </Project>
