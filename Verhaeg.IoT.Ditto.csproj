@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Mario Verhaeg</Authors>
+    <Company>Mario Verhaeg</Company>
+    <Product>Verhaeg.IoT</Product>
+    <Description>Base class for communication with Eclipse Ditto.</Description>
+    <PackageProjectUrl>https://www.marioverhaeg.nl</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/marioverhaeg/Verhaeg.IoT.Ditto</RepositoryUrl>
+    <Version>1.0.2</Version>
+    <PackageTags>ditto</PackageTags>
+    <RepositoryType>Github</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>

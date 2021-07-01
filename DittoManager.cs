@@ -23,14 +23,18 @@ namespace Verhaeg.IoT.Ditto
             // Initiate Configuration
             conf = new Configuration.Connection(uri, username, password);
 
+            Log.Information("Starting DittoManager...");
+
             hc = new HttpClient();
             hc.BaseAddress = conf.ditto_uri;
             var byteArray = System.Text.Encoding.ASCII.GetBytes(conf.username + ":" + conf.password);
             hc.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
             dc = new DittoClient(hc);
+
+            Log.Information("DittoManager started.");
         }
 
-        public static DittoManager Instance(string uri, string username, string password)
+        public static void Start(string uri, string username, string password)
         {
             lock (padlock)
             {
@@ -38,7 +42,21 @@ namespace Verhaeg.IoT.Ditto
                 {
                     _instance = new DittoManager("DittoManager", uri, username, password);
                 }
-                return (DittoManager)_instance;
+            }
+        }
+
+        public static DittoManager Instance()
+        {
+            lock (padlock)
+            {
+                if (_instance == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return (DittoManager)_instance;
+                }
             }
         }
 
@@ -66,12 +84,12 @@ namespace Verhaeg.IoT.Ditto
 
         public DittoWebSocketResponse Parse(string str)
         {
-            Log.Information("Trying to parse Ditto JSON response into Thing...");
+            Log.Debug("Trying to parse Ditto JSON response into Thing...");
             DittoWebSocketResponse dws = null;
             try
             {
                 dws = JsonConvert.DeserializeObject<DittoWebSocketResponse>(str);
-                Log.Information("Parsing JSON from Ditto into thing succeeded.");
+                Log.Debug("Parsing JSON from Ditto into thing succeeded.");
             }
             catch (Exception ex)
             {
@@ -86,16 +104,16 @@ namespace Verhaeg.IoT.Ditto
         {
             if (obj != null)
             {
-                Log.Information("Processing message...");
+                Log.Debug("Processing message...");
                 NewThing t = (NewThing)obj;
 
                 var att = t.Attributes.AdditionalProperties.Where(a => a.Key == "name").FirstOrDefault();
                 try
                 {
-                    Log.Information("Trying to update thing with thingId: " + att.Value.ToString() + "...");
+                    Log.Debug("Trying to update thing with thingId: " + att.Value.ToString() + "...");
                     Task<Thing> tt = dc.Things3Async(att.Value.ToString(), null, null, t);
                     tt.Wait();
-                    Log.Information("Thing with thingId: " + att.Value.ToString() + " updated.");
+                    Log.Debug("Thing with thingId: " + att.Value.ToString() + " updated.");
                 }
                 catch (Exception ex)
                 {

@@ -37,7 +37,7 @@ namespace Verhaeg.IoT.Ditto
 
             // Initiate Configuration
             conf = new Configuration.Connection(uri, username, password);
-            Log.Debug("Starting new task to connect to Ditto Websocket...");
+            Log.Information("Starting new task to connect to Ditto Websocket...");
             t = Task.Factory.StartNew(() => Start(ns), ct);
         }
 
@@ -96,7 +96,7 @@ namespace Verhaeg.IoT.Ditto
                         ms.Write(buffer.Array, buffer.Offset, result.Count);
                     } while (!result.EndOfMessage);
 
-                    Log.Information("End of message...");
+                    Log.Debug("End of message...");
                     if (result.MessageType == WebSocketMessageType.Close)
                         break;
 
@@ -105,13 +105,13 @@ namespace Verhaeg.IoT.Ditto
                     using (var reader = new StreamReader(ms, Encoding.UTF8))
                         str = await reader.ReadToEndAsync().ConfigureAwait(false);
 
-                    Log.Information("Checking for valid Ditto response...");
+                    Log.Debug("Checking for valid Ditto response...");
                     if (str.StartsWith("{\"topic\":", StringComparison.Ordinal))
                     {
                         int start = str.IndexOf("thingId") + 10;
                         int end = str.IndexOf("policyId") - 3;
                         string thingId = str.Substring(start, end-start);
-                        Log.Information("Status for " + thingId + " changed, informing .");;
+                        Log.Debug("Status for " + thingId + " changed, informing Manager.");
                         Log.Debug(str);
                         SendToManager(str);
                     }

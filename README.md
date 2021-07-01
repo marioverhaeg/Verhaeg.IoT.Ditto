@@ -3,8 +3,15 @@
 
 # Usage
 
+
+
 ## DittoManager
-DittoManager.Write(obj) accepts objects of the type "NewThing", part of the Ditto-API-2.cs file. The object is taken from the queue and updated to Ditto. The DittoManager is a singleton class that you need to start with the correct parameters: the Ditto URI, username, and password.
+Start the DittoManager using:
+```c#
+DittoManager.Start(uri, username, password);
+```
+
+DittoManager.Instance().Write(obj) accepts objects of the type "NewThing", part of the Ditto-API-2.cs file. The object is taken from the queue and updated to Ditto. The DittoManager is a singleton class that you need to start with the correct parameters: the Ditto URI, username, and password.
 
 Example:
 ```c#
