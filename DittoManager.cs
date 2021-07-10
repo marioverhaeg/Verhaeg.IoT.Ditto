@@ -82,22 +82,7 @@ namespace Verhaeg.IoT.Ditto
             _instance = null;
         }
 
-        public DittoWebSocketResponse Parse(string str)
-        {
-            Log.Debug("Trying to parse Ditto JSON response into Thing...");
-            DittoWebSocketResponse dws = null;
-            try
-            {
-                dws = JsonConvert.DeserializeObject<DittoWebSocketResponse>(str);
-                Log.Debug("Parsing JSON from Ditto into thing succeeded.");
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Parsing JSON into thing failed.");
-                Log.Debug(ex.ToString());
-            }
-            return dws;
-        }
+        
 
 
         protected override void Process(object obj)

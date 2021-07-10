@@ -8,6 +8,8 @@ using System.IO;
 using System.Net;
 using System.Net.WebSockets;
 
+using Newtonsoft.Json;
+
 namespace Verhaeg.IoT.Ditto
 {
     public abstract class DittoWebSocketManager
@@ -120,7 +122,24 @@ namespace Verhaeg.IoT.Ditto
         }
 
         public abstract void SendToManager(string str);
-        
+
+        public DittoWebSocketResponse Parse(string str)
+        {
+            Log.Debug("Trying to parse Ditto JSON response into Thing...");
+            DittoWebSocketResponse dws = null;
+            try
+            {
+                dws = JsonConvert.DeserializeObject<DittoWebSocketResponse>(str);
+                Log.Debug("Parsing JSON from Ditto into thing succeeded.");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Parsing JSON into thing failed.");
+                Log.Debug(ex.ToString());
+            }
+            return dws;
+        }
+
         public void Stop()
         {
             blKeepRunning = false;
