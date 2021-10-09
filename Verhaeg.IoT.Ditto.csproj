@@ -9,7 +9,7 @@
     <Description>Base class for communication with Eclipse Ditto.</Description>
     <PackageProjectUrl>https://www.marioverhaeg.nl</PackageProjectUrl>
     <RepositoryUrl>https://github.com/marioverhaeg/Verhaeg.IoT.Ditto</RepositoryUrl>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
     <PackageTags>ditto</PackageTags>
     <RepositoryType>Github</RepositoryType>
   </PropertyGroup>

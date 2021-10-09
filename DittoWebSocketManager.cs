@@ -49,6 +49,7 @@ namespace Verhaeg.IoT.Ditto
             {
                 await WebSocket(cts.Token, ns).ConfigureAwait(false);
             }
+            Log.Debug("Stopping DittoWebSocketManager...");
         }
 
         protected async Task WebSocket(CancellationToken stoppingToken, string ns)
@@ -60,7 +61,7 @@ namespace Verhaeg.IoT.Ditto
                     {
                         Log.Debug("Trying to connect to Ditto using: " + conf.username + " " + conf.ditto_uri.ToString());
                         socket.Options.Credentials = new NetworkCredential(conf.username, conf.password);
-                        await socket.ConnectAsync(conf.ditto_uri, CancellationToken.None).ConfigureAwait(false);
+                        await socket.ConnectAsync(conf.ditto_uri, stoppingToken).ConfigureAwait(false);
                         await Send(socket, ns).ConfigureAwait(false);
                         await Receive(socket).ConfigureAwait(false);
                     }
@@ -75,7 +76,8 @@ namespace Verhaeg.IoT.Ditto
                         // Restarting socket
                         Log.Error("Trying to restart websocket...");
                     }
-            } while (!stoppingToken.IsCancellationRequested);
+            } 
+            while (!stoppingToken.IsCancellationRequested);
 
         }
 
