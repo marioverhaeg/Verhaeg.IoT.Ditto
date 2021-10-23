@@ -22,6 +22,7 @@ namespace Verhaeg.IoT.Ditto
         protected EventWaitHandle ewh;
         protected Task t;
         protected CancellationTokenSource cts;
+        protected ClientWebSocket cw;
 
         // Logging
         protected Serilog.ILogger Log;
@@ -43,7 +44,7 @@ namespace Verhaeg.IoT.Ditto
             t = Task.Factory.StartNew(() => Start(ns), ct);
         }
 
-        protected async void Start(string ns)
+        public async void Start(string ns)
         {
             while (blKeepRunning)
             {
@@ -54,31 +55,24 @@ namespace Verhaeg.IoT.Ditto
 
         protected async Task WebSocket(CancellationToken stoppingToken, string ns)
         {
-            do
+            while (!stoppingToken.IsCancellationRequested)
             {
-                using (var socket = new ClientWebSocket())
-                    try
-                    {
-                        Log.Debug("Trying to connect to Ditto using: " + conf.username + " " + conf.ditto_uri.ToString());
-                        socket.Options.Credentials = new NetworkCredential(conf.username, conf.password);
-                        await socket.ConnectAsync(conf.ditto_uri, stoppingToken).ConfigureAwait(false);
-                        await Send(socket, ns).ConfigureAwait(false);
-                        await Receive(socket).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error("Something went wrong...");
-                        Log.Debug(ex.ToString());
-                        System.Threading.Thread.Sleep(2000);
-                    }
-                    finally
-                    {
-                        // Restarting socket
-                        Log.Error("Trying to restart websocket...");
-                    }
-            } 
-            while (!stoppingToken.IsCancellationRequested);
-
+                cw = new ClientWebSocket();
+                try
+                {
+                    Log.Debug("Trying to connect to Ditto using: " + conf.username + " " + conf.ditto_uri.ToString());
+                    cw.Options.Credentials = new NetworkCredential(conf.username, conf.password);
+                    await cw.ConnectAsync(conf.ditto_uri, stoppingToken).ConfigureAwait(false);
+                    await Send(cw, ns).ConfigureAwait(false);
+                    await Receive(cw).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Websocket aborted.");
+                    Log.Debug(ex.ToString());
+                    System.Threading.Thread.Sleep(2000);
+                }
+            }
         }
 
         private async Task Send(ClientWebSocket socket, string data)
@@ -142,10 +136,52 @@ namespace Verhaeg.IoT.Ditto
             return dws;
         }
 
+        public bool IsRunning()
+        {
+            if (cw != null)
+            {
+                if (cw.State == WebSocketState.Open)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public void Stop()
         {
             blKeepRunning = false;
             cts.Cancel();
+            if (cw != null)
+            {
+                if (cw.State == WebSocketState.Open)
+                {
+                    Log.Debug("WebSocketState.Open, trying to abort and close.");
+                    try
+                    {
+                        cw.Abort();
+                        Log.Debug("WebSocket closed.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("Could not close websocket.");
+                        Log.Debug(ex.ToString());
+                    }
+                }
+            }
+            else
+            {
+                Log.Debug("WebSocket not running.");
+            }
+
+            
         }
 
     }
