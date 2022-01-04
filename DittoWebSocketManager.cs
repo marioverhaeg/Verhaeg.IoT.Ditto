@@ -63,24 +63,25 @@ namespace Verhaeg.IoT.Ditto
                     Log.Debug("Trying to connect to Ditto using: " + conf.username + " " + conf.ditto_uri.ToString());
                     cw.Options.Credentials = new NetworkCredential(conf.username, conf.password);
                     await cw.ConnectAsync(conf.ditto_uri, stoppingToken).ConfigureAwait(false);
-                    await Send(cw, ns).ConfigureAwait(false);
-                    await Receive(cw).ConfigureAwait(false);
+                    await Send(cw, ns, stoppingToken).ConfigureAwait(false);
+                    await Receive(cw, stoppingToken).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     Log.Error("Websocket aborted.");
                     Log.Debug(ex.ToString());
-                    System.Threading.Thread.Sleep(2000);
+                    Thread.Sleep(2000);
                 }
             }
         }
 
-        private async Task Send(ClientWebSocket socket, string data)
+        private async Task Send(ClientWebSocket socket, string data, CancellationToken stoppingToken)
         {
-            await socket.SendAsync(Encoding.UTF8.GetBytes(data), WebSocketMessageType.Text, true, CancellationToken.None).ConfigureAwait(false);
+            ArraySegment<byte> asb = Encoding.UTF8.GetBytes(data);
+            await socket.SendAsync(asb, WebSocketMessageType.Text, true, stoppingToken).ConfigureAwait(false);
         }
 
-        private async Task Receive(ClientWebSocket socket)
+        private async Task Receive(ClientWebSocket socket, CancellationToken stoppingToken)
         {
             var buffer = new ArraySegment<byte>(new byte[2048]);
             do
@@ -90,7 +91,7 @@ namespace Verhaeg.IoT.Ditto
                 {
                     do
                     {
-                        result = await socket.ReceiveAsync(buffer, CancellationToken.None).ConfigureAwait(false);
+                        result = await socket.ReceiveAsync(buffer, stoppingToken).ConfigureAwait(false);
                         ms.Write(buffer.Array, buffer.Offset, result.Count);
                     } while (!result.EndOfMessage);
 
@@ -114,7 +115,7 @@ namespace Verhaeg.IoT.Ditto
                         SendToManager(str);
                     }
                 }
-            } while (true);
+            } while (stoppingToken.IsCancellationRequested == false);
         }
 
         public abstract void SendToManager(string str);
@@ -166,7 +167,7 @@ namespace Verhaeg.IoT.Ditto
                     Log.Debug("WebSocketState.Open, trying to abort and close.");
                     try
                     {
-                        cw.Abort();
+                        cw.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None).Wait();
                         Log.Debug("WebSocket closed.");
                     }
                     catch (Exception ex)
