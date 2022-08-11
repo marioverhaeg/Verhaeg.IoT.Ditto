@@ -10,7 +10,7 @@
 #pragma warning disable 1573 // Disable "CS1573 Parameter '...' has no matching param tag in the XML comment for ...
 #pragma warning disable 1591 // Disable "CS1591 Missing XML comment for publicly visible type or member ..."
 
-namespace Verhaeg.IoT.Ditto
+namespace Verhaeg.IoT.Ditto.Api20
 {
     using System = global::System;
 

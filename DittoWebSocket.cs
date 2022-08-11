@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using Newtonsoft.Json;
+using Verhaeg.IoT.Ditto.Api20;
 
 namespace Verhaeg.IoT.Ditto
 {
@@ -17,7 +18,7 @@ namespace Verhaeg.IoT.Ditto
         public DateTime timestamp { get; set; }        
     }
 
-    public class Headers
+    public partial class Headers
     {
         public string correlationid { get; set; }
         public string xforwardedfor { get; set; }

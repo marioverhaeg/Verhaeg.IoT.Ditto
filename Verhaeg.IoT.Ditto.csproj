@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Mario Verhaeg</Authors>
     <Company>Mario Verhaeg</Company>
@@ -9,7 +9,7 @@
     <Description>Base class for communication with Eclipse Ditto.</Description>
     <PackageProjectUrl>https://www.marioverhaeg.nl</PackageProjectUrl>
     <RepositoryUrl>https://github.com/marioverhaeg/Verhaeg.IoT.Ditto</RepositoryUrl>
-    <Version>1.0.10</Version>
+    <Version>1.0.11</Version>
     <PackageTags>ditto</PackageTags>
     <RepositoryType>Github</RepositoryType>
     <AssemblyVersion>1.0.9.0</AssemblyVersion>
@@ -18,10 +18,12 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
-    <PackageReference Include="Verhaeg.IoT.Processor" Version="1.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Verhaeg.IoT.Processor\Verhaeg.IoT.Processor.csproj" />
   </ItemGroup>
 
 </Project>

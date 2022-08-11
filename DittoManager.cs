@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
 using Newtonsoft.Json;
+using Verhaeg.IoT.Ditto.Api20;
 
 namespace Verhaeg.IoT.Ditto
 {
@@ -60,10 +61,20 @@ namespace Verhaeg.IoT.Ditto
             }
         }
 
-        public async Task<Thing> GetThing(string thingId)
+        public Thing GetThing(string thingId)
         {
-            Thing t = await dc.Things2Async(thingId);
-            return t;
+            try
+            {
+                Task<Thing> t = dc.Things2Async(thingId);
+                t.Wait();
+                return t.Result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Could not find thing with thingId " + thingId);
+                Log.Debug(ex.ToString());
+                return null;
+            }
         }
 
         public NewThing ConvertThing(Thing t)
@@ -89,21 +100,20 @@ namespace Verhaeg.IoT.Ditto
         {
             if (obj != null)
             {
-                Log.Debug("Processing message...");
                 NewThing t = (NewThing)obj;
-
                 var att = t.Attributes.AdditionalProperties.Where(a => a.Key == "name").FirstOrDefault();
+                //t.PolicyId = att.Value.ToString();
                 try
                 {
-                    Log.Debug("Trying to update thing with thingId: " + att.Value.ToString() + "...");
+                    Log.Debug("Trying to update thing with thingId: " + att.Value.ToString());
                     Task<Thing> tt = dc.Things3Async(att.Value.ToString(), null, null, t);
                     tt.Wait();
-                    Log.Debug("Thing with thingId: " + att.Value.ToString() + " updated.");
+                    Log.Information("Thing with thingId: " + att.Value.ToString() + " updated.");
                 }
                 catch (Exception ex)
                 {
                     Log.Error("Couldn't modify thing with thingId " + att.Value.ToString());
-                    Log.Fatal(ex.ToString());
+                    Log.Debug(ex.ToString());
                 }
             }
             else

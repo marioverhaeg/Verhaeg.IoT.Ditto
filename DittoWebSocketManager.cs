@@ -40,7 +40,7 @@ namespace Verhaeg.IoT.Ditto
 
             // Initiate Configuration
             conf = new Configuration.Connection(uri, username, password);
-            Log.Information("Starting new task to connect to Ditto Websocket...");
+            Log.Debug("Starting new task to connect to Ditto Websocket...");
             t = Task.Factory.StartNew(() => Start(ns), ct);
         }
 
@@ -48,7 +48,9 @@ namespace Verhaeg.IoT.Ditto
         {
             while (blKeepRunning)
             {
+                Log.Information("Websocket started.");
                 await WebSocket(cts.Token, ns).ConfigureAwait(false);
+                Log.Error("Restarting websocket...");
             }
             Log.Debug("Stopping DittoWebSocketManager...");
         }
@@ -70,15 +72,22 @@ namespace Verhaeg.IoT.Ditto
                 {
                     Log.Error("Websocket aborted.");
                     Log.Debug(ex.ToString());
-                    Thread.Sleep(2000);
+                    Thread.Sleep(10000);
                 }
             }
         }
 
         private async Task Send(ClientWebSocket socket, string data, CancellationToken stoppingToken)
         {
-            ArraySegment<byte> asb = Encoding.UTF8.GetBytes(data);
-            await socket.SendAsync(asb, WebSocketMessageType.Text, true, stoppingToken).ConfigureAwait(false);
+            if (socket.State == WebSocketState.Open)
+            {
+                ArraySegment<byte> asb = Encoding.UTF8.GetBytes(data);
+                await socket.SendAsync(asb, WebSocketMessageType.Text, true, stoppingToken).ConfigureAwait(false);
+            }
+            else
+            {
+                Log.Error("ClientWebSocket closed, cannot send message: " + data);
+            }
         }
 
         private async Task Receive(ClientWebSocket socket, CancellationToken stoppingToken)
@@ -118,16 +127,31 @@ namespace Verhaeg.IoT.Ditto
             } while (stoppingToken.IsCancellationRequested == false);
         }
 
-        public abstract void SendToManager(string str);
+        public void SendToManager(string str)
+        {
+            Log.Information("Received message on DittoWebsocket.");
+            Log.Debug("Trying to parse Ditto JSON response into Ditto Thing...");
+            DittoWebSocketResponse dws = Parse(str);
+
+            if (dws != null)
+            {
+                Log.Debug("JSON parsed to Ditto Thing, extracting values...");
+                Extract(dws);
+            }
+            else
+            {
+                Log.Error("Could not parse response from Ditto.");
+            }
+        }
+
+        protected abstract void Extract(DittoWebSocketResponse dws);
 
         public DittoWebSocketResponse Parse(string str)
         {
-            Log.Debug("Trying to parse Ditto JSON response into Thing...");
             DittoWebSocketResponse dws = null;
             try
             {
                 dws = JsonConvert.DeserializeObject<DittoWebSocketResponse>(str);
-                Log.Debug("Parsing JSON from Ditto into thing succeeded.");
             }
             catch (Exception ex)
             {
@@ -162,18 +186,26 @@ namespace Verhaeg.IoT.Ditto
             cts.Cancel();
             if (cw != null)
             {
-                if (cw.State == WebSocketState.Open)
+                while (cw.State == WebSocketState.Open)
                 {
-                    Log.Debug("WebSocketState.Open, trying to abort and close.");
+                    Log.Debug("WebSocketState.Open, trying to close.");
                     try
                     {
-                        cw.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None).Wait();
+                        cw.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+
+                        while (cw.State != WebSocketState.Closed)
+                        {
+                            Log.Debug("Waiting for websocket to be closed...");
+                            Thread.Sleep(5000);
+                        }
+
                         Log.Debug("WebSocket closed.");
                     }
                     catch (Exception ex)
                     {
-                        Log.Error("Could not close websocket.");
+                        Log.Error("Could not close websocket, retrying in 10 seconds...");
                         Log.Debug(ex.ToString());
+                        Thread.Sleep(10000);
                     }
                 }
             }
@@ -181,8 +213,6 @@ namespace Verhaeg.IoT.Ditto
             {
                 Log.Debug("WebSocket not running.");
             }
-
-            
         }
 
     }
