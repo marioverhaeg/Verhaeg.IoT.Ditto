@@ -65,6 +65,7 @@ namespace Verhaeg.IoT.Ditto
                     Log.Debug("Trying to connect to Ditto using: " + conf.username + " " + conf.ditto_uri.ToString());
                     cw.Options.Credentials = new NetworkCredential(conf.username, conf.password);
                     await cw.ConnectAsync(conf.ditto_uri, stoppingToken).ConfigureAwait(false);
+                    Log.Debug("Connected to Ditto.");
                     await Send(cw, ns, stoppingToken).ConfigureAwait(false);
                     await Receive(cw, stoppingToken).ConfigureAwait(false);
                 }
