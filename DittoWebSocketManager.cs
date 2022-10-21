@@ -41,6 +41,7 @@ namespace Verhaeg.IoT.Ditto
             // Initiate Configuration
             conf = new Configuration.Connection(uri, username, password);
             Log.Debug("Starting new task to connect to Ditto Websocket...");
+            Log.Debug("Using Ditto namespace: " + ns);
             t = Task.Factory.StartNew(() => Start(ns), ct);
         }
 
