@@ -102,13 +102,14 @@ namespace Verhaeg.IoT.Ditto
             {
                 NewThing t = (NewThing)obj;
                 var att = t.Attributes.AdditionalProperties.Where(a => a.Key == "name").FirstOrDefault();
+
                 //t.PolicyId = att.Value.ToString();
                 try
                 {
                     Log.Debug("Trying to update thing with thingId: " + att.Value.ToString());
                     Task<Thing> tt = dc.Things3Async(att.Value.ToString(), null, null, t);
                     tt.Wait();
-                    Log.Information("Thing with thingId: " + att.Value.ToString() + " updated.");
+                    Log.Debug("Thing with thingId: " + att.Value.ToString() + " updated.");
                 }
                 catch (Exception ex)
                 {
