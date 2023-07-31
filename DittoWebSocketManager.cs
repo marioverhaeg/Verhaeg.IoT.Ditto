@@ -131,12 +131,12 @@ namespace Verhaeg.IoT.Ditto
 
         public void SendToManager(string str)
         {
-            Log.Information("Received message on DittoWebsocket.");
             Log.Debug("Trying to parse Ditto JSON response into Ditto Thing...");
             DittoWebSocketResponse dws = Parse(str);
 
             if (dws != null)
             {
+                Log.Debug("Received update from " + dws.value.ThingId);
                 Log.Debug("JSON parsed to Ditto Thing, extracting values...");
                 Extract(dws);
             }
