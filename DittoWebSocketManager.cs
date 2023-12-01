@@ -73,7 +73,7 @@ namespace Verhaeg.IoT.Ditto
                 catch (Exception ex)
                 {
                     Log.Error("Websocket aborted.");
-                    Log.Debug(ex.ToString());
+                    Log.Error(ex.ToString());
                     Thread.Sleep(10000);
                 }
             }
@@ -106,7 +106,6 @@ namespace Verhaeg.IoT.Ditto
                         ms.Write(buffer.Array, buffer.Offset, result.Count);
                     } while (!result.EndOfMessage);
 
-                    Log.Debug("End of message...");
                     if (result.MessageType == WebSocketMessageType.Close)
                         break;
 
@@ -115,14 +114,12 @@ namespace Verhaeg.IoT.Ditto
                     using (var reader = new StreamReader(ms, Encoding.UTF8))
                         str = await reader.ReadToEndAsync().ConfigureAwait(false);
 
-                    Log.Debug("Checking for valid Ditto response...");
                     if (str.StartsWith("{\"topic\":", StringComparison.Ordinal))
                     {
                         int start = str.IndexOf("thingId") + 10;
                         int end = str.IndexOf("policyId") - 3;
                         string thingId = str.Substring(start, end-start);
-                        Log.Debug("Status for " + thingId + " changed, informing Manager.");
-                        Log.Debug(str);
+                        Log.Information("Status for " + thingId + " changed, informing Manager.");
                         SendToManager(str);
                     }
                 }
@@ -131,13 +128,11 @@ namespace Verhaeg.IoT.Ditto
 
         public void SendToManager(string str)
         {
-            Log.Debug("Trying to parse Ditto JSON response into Ditto Thing...");
             DittoWebSocketResponse dws = Parse(str);
 
             if (dws != null)
             {
                 Log.Debug("Received update from " + dws.value.ThingId);
-                Log.Debug("JSON parsed to Ditto Thing, extracting values...");
                 Extract(dws);
             }
             else
@@ -158,7 +153,7 @@ namespace Verhaeg.IoT.Ditto
             catch (Exception ex)
             {
                 Log.Error("Parsing JSON into thing failed.");
-                Log.Debug(ex.ToString());
+                Log.Error(ex.ToString());
             }
             return dws;
         }
@@ -206,7 +201,7 @@ namespace Verhaeg.IoT.Ditto
                     catch (Exception ex)
                     {
                         Log.Error("Could not close websocket, retrying in 10 seconds...");
-                        Log.Debug(ex.ToString());
+                        Log.Error(ex.ToString());
                         Thread.Sleep(10000);
                     }
                 }

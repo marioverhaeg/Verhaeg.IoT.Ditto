@@ -72,7 +72,7 @@ namespace Verhaeg.IoT.Ditto
             catch (Exception ex)
             {
                 Log.Error("Could not find thing with thingId " + thingId);
-                Log.Debug(ex.ToString());
+                Log.Error(ex.ToString());
                 return null;
             }
         }
@@ -114,7 +114,7 @@ namespace Verhaeg.IoT.Ditto
                 catch (Exception ex)
                 {
                     Log.Error("Couldn't modify thing with thingId " + att.Value.ToString());
-                    Log.Debug(ex.ToString());
+                    Log.Error(ex.ToString());
                 }
             }
             else
