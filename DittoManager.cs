@@ -65,7 +65,7 @@ namespace Verhaeg.IoT.Ditto
         {
             try
             {
-                Task<Thing> t = dc.Things2Async(thingId);
+                Task<Thing> t = dc.Things2Async(thingId, "thingId,policyId,definition,attributes,features,_modified");
                 t.Wait();
                 return t.Result;
             }

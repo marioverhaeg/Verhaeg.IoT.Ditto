@@ -12,6 +12,7 @@
 
 namespace Verhaeg.IoT.Ditto.Api20
 {
+    using System;
     using System = global::System;
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.6.0.0 (NJsonSchema v10.1.18.0 (Newtonsoft.Json v12.0.0.0))")]
@@ -7117,6 +7118,10 @@ namespace Verhaeg.IoT.Ditto.Api20
         [Newtonsoft.Json.JsonProperty("thingId", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string ThingId { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("_modified", Required = Newtonsoft.Json.Required.Default)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        public DateTime Modified { get; set; }
 
         /// <summary>The policy ID used for controlling access to this thing, managed by resource `/policies/{policyId}`, has to conform to the namespaced entity ID notation (see [Ditto documentation on namespaced entity IDs](https://www.eclipse.org/ditto/basic-namespaces-and-names.html#namespaced-id)).</summary>
         [Newtonsoft.Json.JsonProperty("policyId", Required = Newtonsoft.Json.Required.Always)]
