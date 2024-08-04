@@ -118,7 +118,7 @@ namespace Verhaeg.IoT.Ditto
                     {
                         int start = str.IndexOf("thingId") + 10;
                         int end = str.IndexOf("policyId") - 3;
-                        string thingId = str.Substring(start, end-start);
+                        string thingId = str.Substring(start, end - start);
                         Log.Information("Status for " + thingId + " changed, informing Manager.");
                         SendToManager(str);
                     }
