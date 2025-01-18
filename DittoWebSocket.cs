@@ -16,6 +16,13 @@ namespace Verhaeg.IoT.Ditto
         public Value value { get; set; }
         public int revision { get; set; }
         public DateTime timestamp { get; set; }        
+
+        public DittoWebSocketResponse(string thingId)
+        {
+            this.timestamp = DateTime.Now;
+            this.value = new Value();
+            this.value.ThingId = thingId;
+        }
     }
 
     public partial class Headers
