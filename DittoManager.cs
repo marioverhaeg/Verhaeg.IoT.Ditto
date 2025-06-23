@@ -106,7 +106,6 @@ namespace Verhaeg.IoT.Ditto
                 //t.PolicyId = att.Value.ToString();
                 try
                 {
-                    Log.Debug("Trying to update thing with thingId: " + att.Value.ToString());
                     Task<Thing> tt = dc.Things3Async(att.Value.ToString(), null, null, t);
                     tt.Wait();
                     Log.Debug("Thing with thingId: " + att.Value.ToString() + " updated.");
