@@ -112,7 +112,7 @@ namespace Verhaeg.IoT.Ditto
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Couldn't modify thing with thingId " + att.Value.ToString());
+                    Log.Error("Couldn't modify thing with thingId " + att.Value.ToString() + " and " + t.Definition);
                     Log.Error(ex.ToString());
                 }
             }
