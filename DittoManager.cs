@@ -8,7 +8,7 @@ using Verhaeg.IoT.Ditto.Api20;
 
 namespace Verhaeg.IoT.Ditto
 {
-    public class DittoManager : QueueManager
+    public class DittoManager : QueueManager<NewThing>
     {
         // SingleTon
         private static DittoManager _instance = null;
@@ -88,7 +88,7 @@ namespace Verhaeg.IoT.Ditto
             return nt;
         }
 
-        protected override void Dispose()
+        public override void Dispose()
         {
             _instance = null;
         }
@@ -96,11 +96,10 @@ namespace Verhaeg.IoT.Ditto
         
 
 
-        protected override void Process(object obj)
+        protected override void Process(NewThing t)
         {
-            if (obj != null)
+            if (t != null)
             {
-                NewThing t = (NewThing)obj;
                 var att = t.Attributes.AdditionalProperties.Where(a => a.Key == "name").FirstOrDefault();
 
                 //t.PolicyId = att.Value.ToString();
@@ -118,7 +117,7 @@ namespace Verhaeg.IoT.Ditto
             }
             else
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new ArgumentNullException(nameof(t));
             }
         }
     }
