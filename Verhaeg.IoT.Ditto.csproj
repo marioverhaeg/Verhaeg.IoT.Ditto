@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>Mario Verhaeg</Authors>
     <Company>Mario Verhaeg</Company>
     <Product>Verhaeg.IoT</Product>
